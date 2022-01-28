@@ -35,14 +35,30 @@ You should `dispatch` your thunk actions the same way you `dispatch`-ed the
 actions returned from your action creators, using the same `dispatch` made
 available in your application through the `useDispatch` hook.
 
+Once you finish, your code should look something like this:
+
+```js
+import { fetchArticles } from '../../store/articleReducer';
+
+const ArticleList = () => {
+  const dispatch = useDispatch();
+  const articles = useSelector(state=>state.articleState.entries);
+
+  useEffect(() => {
+    dispatch(fetchArticles());
+  }, [dispatch]);
+  // ...
+};
+```
+
 ## Test and debug
 
 You ended the last practice with a broken app because you were no longer loading
 the articles. Now that you are fetching the articles, test your code in the
-browser again. You should see the `Article List` displaying the various titles
+browser again. You should see the "Article List" displaying the various titles
 once again. Yea!
 
-Now click on one of the titles. You will likely see a blank screen with the
+Now click on one of the titles. You will probably see a blank screen with the
 DevTools console shouting at you because `SingleArticle` is trying to access
 inside of `undefined`. In short, `SingleArticle` can't find the article it
 is supposed to display. Fix this problem in the `SingleArticle` component.
@@ -50,7 +66,7 @@ is supposed to display. Fix this problem in the `SingleArticle` component.
 > Hint: the database assigns integer `id`s rather than the string `id`s assigned
 > by `nanoid`.
 
-Once you get the `SingleArticle` to render again, refresh the page. Oh no! It's
+Once you get `SingleArticle` to render again, refresh the page. Oh no! It's
 (likely) broken again. Check the state in the Redux DevTools:
 `articleState.entries` should be empty. The refresh clears the Redux store, but
 why doesn't the app just re-fetch the articles?
@@ -59,16 +75,17 @@ Take a look in __ArticleList/index.js__. Notice that you fetch the articles in a
 `useEffect`, and a `useEffect` always runs **after** a render. In other words,
 your app will always render at least once before it fetches the articles. It's
 this first render that's the problem: there are no articles loaded for
-`SingleArticle` to grab.
+`SingleArticle` to grab. To fix this, use some kind of conditional to make sure
+that `SingleArticle` doesn't try to render `singleArticle`--note the lowercase
+'s'--if there is no article to display. (There are several ways this could be
+done; just pick one.)
 
-To fix this, just make sure that `SingleArticle` does not try to render an
-article that it does not have. Once `SingleArticle` makes it through the first
-render, the `useEffect` will run, fetch the articles, and load them into the
-Redux store. This updating of the store will then trigger a re-render in which
-`SingleArticle` should be able to find and display the specified article
-(assuming it was a valid article request to begin with). All of this typically
-happens so quickly that it is hard for the human eye even to notice that more
-than one render occurs!
+Once `SingleArticle` makes it through the first render, the `useEffect` will
+run, fetch the articles, and load them into the Redux store. This updating of
+the store will then trigger a re-render in which `SingleArticle` should be able
+to find and display the specified article (assuming it was a valid article
+request to begin with). All of this typically happens so quickly that it is hard
+for the human eye to even notice that more than one render occurs!
 
 ## `writeArticle`
 
@@ -76,12 +93,21 @@ Now it's your turn! Update the `ArticleInput` component found in the
 __frontend/src/component/ArticleInput/index.js__ file to use the `writeArticle`
 thunk action creator when the user submits the form to create a new article.
 
-> Note: The database will now assign the new article an `id`, so you will no
+> Tip: The database will now assign the new article an `id`, so you will no
 > longer need `nanoid`.
+
+Note that you will want to `await` the result of your `dispatch` and only reset
+the form if the article was successfully entered into the database. You can only `await` inside an `async` function, however, so you will also need to re-define `handleSubmit` accordingly:
+
+```js
+const handleSubmit = async (e) => {
+  // ...
+}
+```
 
 ## What you have learned
 
 **Congratulations!** In this practice you have learned how to
 
 1. `dispatch` thunk actions from within your React components
-2. Debug some of the issues that can arise when using thunks
+2. Debug some of the issues that commonly arise when using thunks

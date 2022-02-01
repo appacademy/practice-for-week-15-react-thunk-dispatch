@@ -3,7 +3,7 @@
 In this practice, you will dispatch the thunks returned from the thunk action
 creators you wrote in the previous practice.
 
-## Set up
+## Setup
 
 Clone the starter repo accessible from the `Download Project` button at the
 bottom of this page.

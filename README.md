@@ -97,7 +97,9 @@ thunk action creator when the user submits the form to create a new article.
 > longer need `nanoid`.
 
 Note that you will want to `await` the result of your `dispatch` and only reset
-the form if the article was successfully entered into the database. You can only `await` inside an `async` function, however, so you will also need to re-define `handleSubmit` accordingly:
+the form if the article was successfully entered into the database. You can only
+`await` inside an `async` function, however, so you will also need to re-define
+`handleSubmit` accordingly:
 
 ```js
 const handleSubmit = async (e) => {
